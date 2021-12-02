@@ -6,6 +6,8 @@ import { createLocalStorage, createSessionStorage } from '/@/utils/cache';
 import { Memory } from './memory';
 import {
   TOKEN_KEY,
+  REFRESH_TOKEN_KEY,
+  EXPIRE_TMIE_KEY,
   USER_INFO_KEY,
   ROLES_KEY,
   LOCK_INFO_KEY,
@@ -20,6 +22,8 @@ import { pick, omit } from 'lodash-es';
 
 interface BasicStore {
   [TOKEN_KEY]: string | number | null | undefined;
+  [REFRESH_TOKEN_KEY]: string | number | null | undefined;
+  [EXPIRE_TMIE_KEY]: string | number | null | undefined;
   [USER_INFO_KEY]: UserInfo;
   [ROLES_KEY]: string[];
   [LOCK_INFO_KEY]: LockInfo;

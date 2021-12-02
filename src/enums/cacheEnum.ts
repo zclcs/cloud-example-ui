@@ -1,6 +1,12 @@
 // token key
 export const TOKEN_KEY = 'TOKEN__';
 
+// refresh token key
+export const REFRESH_TOKEN_KEY = 'REFRESH__TOKEN__';
+
+// expireTime key
+export const EXPIRE_TMIE_KEY = 'EXPIRE__TMIE__';
+
 export const LOCALE_KEY = 'LOCALE__';
 
 // user info key

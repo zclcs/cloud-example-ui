@@ -33,7 +33,7 @@ export abstract class AxiosTransform {
   requestInterceptors?: (
     config: AxiosRequestConfig,
     options: CreateAxiosOptions,
-  ) => AxiosRequestConfig;
+  ) => Promise<AxiosRequestConfig>;
 
   /**
    * @description: 请求之后的拦截器

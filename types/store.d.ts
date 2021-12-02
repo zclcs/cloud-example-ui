@@ -30,14 +30,22 @@ export interface ErrorLogInfo {
   time?: string;
 }
 
-export interface UserInfo {
-  userId: string | number;
-  username: string;
-  realName: string;
-  avatar: string;
-  desc?: string;
-  homePath?: string;
+export interface Principal {
+  // 用户角色
   roles: RoleInfo[];
+  // 用户角色id
+  roleIds: number[];
+  // 用户角色名称
+  roleNames: string[];
+  // 用户id
+  userId: number;
+  // 用户名
+  username: string;
+  homePath?: string;
+}
+
+export interface UserInfo {
+  principal: Principal;
 }
 
 export interface BeforeMiniState {

@@ -10,12 +10,12 @@ import { useGlobSetting } from '/@/hooks/setting';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { RequestEnum, ResultEnum, ContentTypeEnum } from '/@/enums/httpEnum';
 import { isString } from '/@/utils/is';
-import { getToken } from '/@/utils/auth';
+import { getExpireTime, getReFreshToken, getToken } from '/@/utils/auth';
 import { setObjToUrlParams, deepMerge } from '/@/utils';
 import { useErrorLogStoreWithOut } from '/@/store/modules/errorLog';
 import { useI18n } from '/@/hooks/web/useI18n';
+import { useUserStore } from '/@/store/modules/user';
 import { joinTimestamp, formatRequestDate } from './helper';
-import { useUserStoreWithOut } from '/@/store/modules/user';
 
 const globSetting = useGlobSetting();
 const urlPrefix = globSetting.urlPrefix;
@@ -37,8 +37,8 @@ const transform: AxiosTransform = {
     }
     // 不进行任何处理，直接返回
     // 用于页面代码可能需要直接获取code，data，message这些信息时开启
-    if (!isTransformResponse) {
-      return res.data;
+    if (isTransformResponse) {
+      return res.data.data;
     }
     // 错误的时候返回
 
@@ -48,27 +48,24 @@ const transform: AxiosTransform = {
       throw new Error(t('sys.api.apiRequestFailed'));
     }
     //  这里 code，result，message为 后台统一的字段，需要在 types.ts内修改为项目自己的接口返回格式
-    const { code, result, message } = data;
+    const { msg } = data;
 
     // 这里逻辑可以根据项目进行修改
-    const hasSuccess = data && Reflect.has(data, 'code') && code === ResultEnum.SUCCESS;
+    const hasSuccess = res.status === 200;
     if (hasSuccess) {
-      return result;
+      return data;
     }
 
     // 在此处根据自己项目的实际情况对不同的code执行不同的操作
     // 如果不希望中断当前请求，请return数据，否则直接抛出异常即可
     let timeoutMsg = '';
-    switch (code) {
+    switch (res.status) {
       case ResultEnum.TIMEOUT:
         timeoutMsg = t('sys.api.timeoutMessage');
-        const userStore = useUserStoreWithOut();
-        userStore.setToken(undefined);
-        userStore.logout(true);
         break;
       default:
-        if (message) {
-          timeoutMsg = message;
+        if (msg) {
+          timeoutMsg = msg;
         }
     }
 
@@ -85,7 +82,7 @@ const transform: AxiosTransform = {
 
   // 请求之前处理config
   beforeRequestHook: (config, options) => {
-    const { apiUrl, joinPrefix, joinParamsToUrl, formatDate, joinTime = true, urlPrefix } = options;
+    const { apiUrl, joinPrefix, joinParamsToUrl, formatDate, joinTime = true } = options;
 
     if (joinPrefix) {
       config.url = `${urlPrefix}${config.url}`;
@@ -135,14 +132,28 @@ const transform: AxiosTransform = {
   /**
    * @description: 请求拦截器处理
    */
-  requestInterceptors: (config, options) => {
+  requestInterceptors: async (config, options) => {
+    // 请求之前处理config
+    const expireTime = getExpireTime();
+    if (expireTime !== 0 && (config as Recordable)?.requestOptions?.withToken !== false) {
+      console.log(config);
+      const left = expireTime - new Date().getTime();
+      const refreshToken = getReFreshToken();
+      // 5 * 60 * 1000 5 分钟 86339000 测试刷新token
+      if (left < 5 * 60 * 1000 && refreshToken) {
+        const userStore = useUserStore();
+        await userStore.refreshTokenFn();
+      }
+    }
     // 请求之前处理config
     const token = getToken();
-    if (token && (config as Recordable)?.requestOptions?.withToken !== false) {
-      // jwt token
-      (config as Recordable).headers.Authorization = options.authenticationScheme
-        ? `${options.authenticationScheme} ${token}`
-        : token;
+    if (token) {
+      if (token && (config as Recordable)?.requestOptions?.withToken !== false) {
+        // jwt token
+        (config as Recordable).headers.Authorization = options.authenticationScheme
+          ? `${options.authenticationScheme} ${token}`
+          : token;
+      }
     }
     return config;
   },
@@ -163,7 +174,7 @@ const transform: AxiosTransform = {
     errorLogStore.addAjaxErrorInfo(error);
     const { response, code, message, config } = error || {};
     const errorMessageMode = config?.requestOptions?.errorMessageMode || 'none';
-    const msg: string = response?.data?.error?.message ?? '';
+    const msg: string = response?.data?.msg ?? '';
     const err: string = error?.toString?.() ?? '';
     let errMessage = '';
 
@@ -184,10 +195,18 @@ const transform: AxiosTransform = {
         return Promise.reject(error);
       }
     } catch (error) {
+      if (msg != '') {
+        throw new Error(response);
+      }
       throw new Error(error as unknown as string);
     }
 
     checkStatus(error?.response?.status, msg, errorMessageMode);
+    if (msg != '') {
+      console.log(response);
+      return Promise.reject(response);
+    }
+    console.log(error);
     return Promise.reject(error);
   },
 };
@@ -198,15 +217,16 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
       {
         // See https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#authentication_schemes
         // authentication schemes，e.g: Bearer
-        // authenticationScheme: 'Bearer',
-        authenticationScheme: '',
+        authenticationScheme: 'Bearer',
+        // authenticationScheme: '',
         timeout: 10 * 1000,
         // 基础接口地址
         // baseURL: globSetting.apiUrl,
-
-        headers: { 'Content-Type': ContentTypeEnum.JSON },
+        // 接口可能会有通用的地址部分，可以统一抽取出来
+        urlPrefix: urlPrefix,
+        // headers: { 'Content-Type': ContentTypeEnum.JSON },
         // 如果是form-data格式
-        // headers: { 'Content-Type': ContentTypeEnum.FORM_URLENCODED },
+        headers: { 'Content-Type': ContentTypeEnum.FORM_URLENCODED },
         // 数据处理方式
         transform,
         // 配置项，下面的选项都可以在独立的接口请求中覆盖
@@ -216,7 +236,7 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
           // 是否返回原生响应头 比如：需要获取响应头时使用该属性
           isReturnNativeResponse: false,
           // 需要对返回数据进行处理
-          isTransformResponse: true,
+          isTransformResponse: false,
           // post请求的时候添加参数到url
           joinParamsToUrl: false,
           // 格式化提交参数时间
@@ -225,8 +245,6 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
           errorMessageMode: 'message',
           // 接口地址
           apiUrl: globSetting.apiUrl,
-          // 接口拼接地址
-          urlPrefix: urlPrefix,
           //  是否加入时间戳
           joinTime: true,
           // 忽略重复请求
@@ -239,12 +257,26 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
     ),
   );
 }
+
 export const defHttp = createAxios();
+
+export const defNoTokenHttp = createAxios({
+  requestOptions: {
+    // 是否携带token
+    withToken: false,
+  },
+});
+
+export const defHttpWithTransform = createAxios({
+  requestOptions: {
+    // 需要对返回数据进行处理
+    isTransformResponse: true,
+  },
+});
 
 // other api url
 // export const otherHttp = createAxios({
 //   requestOptions: {
 //     apiUrl: 'xxx',
-//     urlPrefix: 'xxx',
 //   },
 // });

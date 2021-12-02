@@ -24,13 +24,13 @@ const setting: ProjectConfig = {
   settingButtonPosition: SettingButtonPositionEnum.AUTO,
 
   // Permission mode
-  permissionMode: PermissionModeEnum.ROUTE_MAPPING,
+  permissionMode: PermissionModeEnum.BACK,
 
   // Permission-related cache is stored in sessionStorage or localStorage
   permissionCacheType: CacheTypeEnum.LOCAL,
 
   // Session timeout processing
-  sessionTimeoutProcessing: SessionTimeoutProcessingEnum.ROUTE_JUMP,
+  sessionTimeoutProcessing: SessionTimeoutProcessingEnum.PAGE_COVERAGE,
 
   // color
   themeColor: primaryColor,

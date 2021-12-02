@@ -92,8 +92,8 @@ export const usePermissionStore = defineStore({
       this.backMenuList = [];
       this.lastBuildMenuTime = 0;
     },
-    async changePermissionCode() {
-      const codeList = await getPermCode();
+    async changePermissionCode(username: string) {
+      const codeList = await getPermCode(username);
       this.setPermCodeList(codeList);
     },
     async buildRoutesAction(): Promise<AppRouteRecordRaw[]> {
@@ -123,7 +123,7 @@ export const usePermissionStore = defineStore({
        * */
       const patchHomeAffix = (routes: AppRouteRecordRaw[]) => {
         if (!routes || routes.length === 0) return;
-        let homePath: string = userStore.getUserInfo.homePath || PageEnum.BASE_HOME;
+        let homePath: string = userStore.getUserInfo.principal.homePath || PageEnum.BASE_HOME;
         function patcher(routes: AppRouteRecordRaw[], parentPath = '') {
           if (parentPath) parentPath = parentPath + '/';
           routes.forEach((route: AppRouteRecordRaw) => {
@@ -184,8 +184,10 @@ export const usePermissionStore = defineStore({
           // this function may only need to be executed once, and the actual project can be put at the right time by itself
           let routeList: AppRouteRecordRaw[] = [];
           try {
-            this.changePermissionCode();
-            routeList = (await getMenuList()) as AppRouteRecordRaw[];
+            this.changePermissionCode(userStore.getUserInfo.principal.username);
+            routeList = (await getMenuList(
+              userStore.getUserInfo.principal.username
+            )) as AppRouteRecordRaw[];
           } catch (error) {
             console.error(error);
           }
