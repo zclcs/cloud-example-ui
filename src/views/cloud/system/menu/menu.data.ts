@@ -155,7 +155,7 @@ export const formSchema: FormSchema[] = [
     label: '权限标识',
     component: 'Input',
     required: true,
-    ifShow: ({ values }) => isButton(values.type),
+    ifShow: ({ values }) => !isDir(values.type),
   },
   // {
   //   field: 'status',

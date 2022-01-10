@@ -110,7 +110,6 @@
       }
 
       function handleDataChange() {
-        console.log(searchInfo.dictNameId);
         if (searchInfo.dictNameId === '' || searchInfo.dictNameId === undefined) {
           notification.success({
             message: '请在左侧选择字典表名后操作',

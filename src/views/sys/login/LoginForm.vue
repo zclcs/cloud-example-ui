@@ -120,6 +120,7 @@
 
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import axios from 'axios';
 
   import { useUserStore } from '/@/store/modules/user';
   import { LoginStateEnum, useLoginState, useFormRules, useFormValid } from './useLogin';
@@ -151,9 +152,11 @@
     password: '',
     code: '',
     key: uuid,
-    codeUrl: handleCodeUrl(uuid),
+    codeUrl: '',
     preview: false,
   });
+  formData.key = uuid;
+  handleCodeUrl(uuid);
 
   const { validForm } = useFormValid(formRef);
 
@@ -164,11 +167,38 @@
   function handleChangeCode() {
     uuid = buildUUID();
     formData.key = uuid;
-    formData.codeUrl = handleCodeUrl(uuid);
+    handleCodeUrl(uuid);
   }
 
   function handleCodeUrl(uuid: string) {
-    return globSetting.apiUrl + '/auth/captcha?key=' + uuid;
+    axios({
+      method: 'GET',
+      url: globSetting.apiUrl + '/auth/captcha?key=' + uuid,
+      responseType: 'arraybuffer',
+    })
+      .then((res) => {
+        formData.codeUrl =
+          'data:image/png;base64,' +
+          btoa(
+            new Uint8Array(res.data).reduce((data, byte) => data + String.fromCharCode(byte), ''),
+          );
+      })
+      .catch((e) => {
+        formData.codeUrl = '';
+        if (e.toString().indexOf('429') !== -1) {
+          notification.error({
+            message: '获取验证码次数过多',
+            description: ``,
+            duration: 3,
+          });
+        } else {
+          notification.error({
+            message: '获取验证码失败',
+            description: ``,
+            duration: 3,
+          });
+        }
+      });
   }
 
   async function handleLogin() {
@@ -184,7 +214,7 @@
           key: formData.key,
           code: formData.code,
           mode: 'none', //不要默认的错误提示
-        })
+        }),
       );
       if (userInfo) {
         notification.success({

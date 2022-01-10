@@ -136,7 +136,6 @@ const transform: AxiosTransform = {
     // 请求之前处理config
     const expireTime = getExpireTime();
     if (expireTime !== 0 && (config as Recordable)?.requestOptions?.withToken !== false) {
-      console.log(config);
       const left = expireTime - new Date().getTime();
       const refreshToken = getReFreshToken();
       // 5 * 60 * 1000 5 分钟 86339000 测试刷新token

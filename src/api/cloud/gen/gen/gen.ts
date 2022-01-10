@@ -1,4 +1,5 @@
 import { defHttpWithTransform, defHttp } from '/@/utils/http/axios';
+import { ContentTypeEnum } from '/@/enums/httpEnum';
 
 enum Api {
   gen = '/generator/gen',
@@ -17,6 +18,9 @@ export const getTables = (params: any) =>
 export const gen = (params: any) =>
   defHttp.post<any>({
     url: Api.gen,
-    params: params,
+    headers: {
+      'Content-Type': ContentTypeEnum.JSON,
+    },
+    data: params,
     responseType: 'blob',
   });

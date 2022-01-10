@@ -1,6 +1,8 @@
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
 import { getDatasource } from '/@/api/cloud/gen/gen/gen';
+import { getDict } from '/@/api/cloud/dictCache';
+import { getMenuList } from '/@/api/cloud/system';
 
 export const columns: BasicColumn[] = [
   {
@@ -52,6 +54,9 @@ export const searchFormSchema: FormSchema[] = [
     colProps: { span: 8 },
   },
 ];
+
+const isYes = (type: string) => type === '1';
+
 export const formSchema: FormSchema[] = [
   {
     field: 'name',
@@ -68,14 +73,85 @@ export const formSchema: FormSchema[] = [
     dynamicDisabled: true,
   },
   {
-    label: '对象名',
-    field: 'objectName',
-    component: 'Input',
-    required: true,
-  },
-  {
     label: '备注',
     field: 'remark',
     component: 'Input',
+  },
+  {
+    label: '是否创建菜单',
+    field: 'isCreateMenu',
+    component: 'ApiRadioGroup',
+    componentProps: {
+      api: getDict,
+      params: { dict: 'yes_no' },
+      resultField: 'children',
+      labelField: 'title',
+      valueField: 'value',
+    },
+    defaultValue: '0',
+  },
+  {
+    field: 'menuId',
+    label: '上级菜单',
+    component: 'ApiTreeSelect',
+    componentProps: {
+      api: getMenuList,
+      params: { types: '0,2' },
+      replaceFields: {
+        title: 'label',
+        key: 'id',
+        value: 'id',
+      },
+      getPopupContainer: () => document.body,
+    },
+    required: true,
+    ifShow: ({ values }) => isYes(values.isCreateMenu) && !isYes(values.isCreateDir),
+  },
+  {
+    label: '菜单名称',
+    helpMessage: '不填默认表注释',
+    field: 'menuName',
+    component: 'Input',
+    ifShow: ({ values }) => isYes(values.isCreateMenu) || isYes(values.isCreateDir),
+  },
+  {
+    label: '菜单路径',
+    helpMessage: '不填默认类名',
+    field: 'menuPath',
+    component: 'Input',
+    ifShow: ({ values }) => isYes(values.isCreateMenu) || isYes(values.isCreateDir),
+  },
+  {
+    label: '路由组件',
+    field: 'menuComponent',
+    component: 'Input',
+    ifShow: ({ values }) => isYes(values.isCreateMenu) || isYes(values.isCreateDir),
+  },
+  {
+    label: '是否创建目录',
+    field: 'isCreateDir',
+    component: 'ApiRadioGroup',
+    componentProps: {
+      api: getDict,
+      params: { dict: 'yes_no' },
+      resultField: 'children',
+      labelField: 'title',
+      valueField: 'value',
+    },
+    defaultValue: '0',
+  },
+  {
+    label: '目录名称',
+    field: 'dirName',
+    component: 'Input',
+    required: true,
+    ifShow: ({ values }) => isYes(values.isCreateDir),
+  },
+  {
+    label: '目录路径',
+    field: 'dirPath',
+    component: 'Input',
+    required: true,
+    ifShow: ({ values }) => isYes(values.isCreateDir),
   },
 ];
