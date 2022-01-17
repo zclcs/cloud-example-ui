@@ -5,6 +5,7 @@ enum Api {
   TABLELEVEL = '/dict/tableLevel',
   LIST = '/list',
   OPTION = '/option',
+  LAZY = '/lazy',
 }
 
 export const createTableLevelApi = (params: any) =>
@@ -38,3 +39,6 @@ export const getTableLevelList = (params: any) =>
 
 export const getTableLevelOption = (params: any) =>
   defHttpWithTransform.get<any>({ url: Api.TABLELEVEL + Api.OPTION, params });
+
+export const getTableLevelLazyOption = (params: any) =>
+  defHttpWithTransform.get<any>({ url: Api.TABLELEVEL + Api.LAZY + Api.OPTION, params });
