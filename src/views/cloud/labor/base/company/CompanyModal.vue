@@ -49,6 +49,13 @@
           setFieldsValue({
             ...data.record,
           });
+        } else {
+          await updateSchema({
+            field: 'areaCode',
+            componentProps: {
+              displayRenderArray: '',
+            },
+          });
         }
       });
 
