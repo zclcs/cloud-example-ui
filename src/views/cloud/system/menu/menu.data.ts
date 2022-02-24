@@ -103,6 +103,12 @@ export const formSchema: FormSchema[] = [
     required: true,
   },
   {
+    field: 'keepAliveName',
+    label: '页面缓存名称',
+    component: 'Input',
+    ifShow: ({ values }) => isMenu(values.type),
+  },
+  {
     field: 'parentId',
     label: '上级菜单',
     component: 'ApiTreeSelect',

@@ -29,7 +29,7 @@
   import { usePermission } from '/@/hooks/web/usePermission';
 
   export default defineComponent({
-    name: 'GenGen',
+    name: 'Gen',
     components: { BasicTable, GenModal, TableAction },
     setup() {
       const [registerModal, { openModal }] = useModal();

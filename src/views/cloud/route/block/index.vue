@@ -31,7 +31,7 @@
   import { usePermission } from '/@/hooks/web/usePermission';
 
   export default defineComponent({
-    name: 'RouteLog',
+    name: 'BlockLog',
     components: { BasicTable, TableAction, PageWrapper },
     setup() {
       const { hasPermission } = usePermission();

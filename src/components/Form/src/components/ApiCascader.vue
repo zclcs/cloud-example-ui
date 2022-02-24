@@ -3,7 +3,7 @@
     v-model:value="state"
     :options="options"
     :load-data="loadData"
-    change-on-select
+    :change-on-select="changeSelect"
     @change="handleChange"
     :displayRender="handleRenderDisplay"
   >
@@ -55,6 +55,7 @@
       childrenField: propTypes.string.def('children'),
       asyncFetchParamKey: propTypes.string.def('parentCode'),
       immediate: propTypes.bool.def(true),
+      changeSelect: propTypes.bool.def(false),
       // init fetch params
       initFetchParams: {
         type: Object as PropType<Recordable>,

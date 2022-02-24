@@ -66,6 +66,7 @@ export const searchFormSchema: FormSchema[] = [
       dataField: 'data',
       labelField: 'title',
       valueField: 'code',
+      changeSelect: true,
       initFetchParams: { parentCode: '0' },
       asyncFetchParamKey: 'parentCode',
       isLeaf: (record) => {
