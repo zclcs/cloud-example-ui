@@ -44,7 +44,7 @@
   import { usePermission } from '/@/hooks/web/usePermission';
 
   export default defineComponent({
-    name: 'BlackList',
+    name: 'BlackListPage',
     components: { BasicTable, BlackList, TableAction, PageWrapper },
     setup() {
       const [registerModal, { openModal }] = useModal();
