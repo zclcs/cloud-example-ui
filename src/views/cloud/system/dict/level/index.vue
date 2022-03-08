@@ -1,5 +1,5 @@
 <template>
-  <PageWrapper dense contentFullHeight fixedHeight contentClass="flex">
+  <PageWrapper dense contentFullHeight contentClass="flex">
     <TableTree class="w-1/4 xl:w-1/5" :type="'1'" @select="handleSelect" />
     <BasicTable
       @register="registerTable"

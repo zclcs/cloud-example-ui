@@ -1,5 +1,5 @@
 <template>
-  <PageWrapper dense contentFullHeight fixedHeight contentClass="flex">
+  <div>
     <BasicTable @register="registerTable">
       <template #toolbar>
         <a-button v-if="hasPermission('client:add')" type="primary" @click="handleCreate">
@@ -27,8 +27,8 @@
         />
       </template>
     </BasicTable>
-    <ClientModal @register="registerModal" @success="handleSuccess" />
-  </PageWrapper>
+    <ClientDrawer @register="registerDrawer" @success="handleSuccess" />
+  </div>
 </template>
 <script lang="ts">
   import { defineComponent } from 'vue';
@@ -36,18 +36,17 @@
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { getClientPage, deleteClientApi } from '/@/api/cloud/client';
 
-  import { PageWrapper } from '/@/components/Page';
-  import { useModal } from '/@/components/Modal';
-  import ClientModal from './ClientModal.vue';
+  import { useDrawer } from '/@/components/Drawer';
+  import ClientDrawer from './ClientDrawer.vue';
 
   import { columns, searchFormSchema } from './table.data';
   import { usePermission } from '/@/hooks/web/usePermission';
 
   export default defineComponent({
     name: 'Client',
-    components: { BasicTable, ClientModal, TableAction, PageWrapper },
+    components: { BasicTable, ClientDrawer, TableAction },
     setup() {
-      const [registerModal, { openModal }] = useModal();
+      const [registerDrawer, { openDrawer }] = useDrawer();
       const { hasPermission } = usePermission();
       const [registerTable, { reload }] = useTable({
         title: '客户端管理',
@@ -76,13 +75,13 @@
       });
 
       function handleCreate() {
-        openModal(true, {
+        openDrawer(true, {
           isUpdate: false,
         });
       }
 
       function handleEdit(record: Recordable) {
-        openModal(true, {
+        openDrawer(true, {
           record,
           isUpdate: true,
         });
@@ -99,7 +98,7 @@
 
       return {
         registerTable,
-        registerModal,
+        registerDrawer,
         handleCreate,
         handleEdit,
         handleDelete,

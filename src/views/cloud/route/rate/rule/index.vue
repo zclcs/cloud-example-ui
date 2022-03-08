@@ -1,5 +1,5 @@
 <template>
-  <PageWrapper dense contentFullHeight fixedHeight contentClass="flex">
+  <PageWrapper dense contentFullHeight contentClass="flex">
     <BasicTable @register="registerTable">
       <template #toolbar>
         <a-button v-if="hasPermission('rateLimitRule:add')" type="primary" @click="handleCreate">
