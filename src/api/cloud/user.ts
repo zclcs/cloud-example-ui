@@ -53,7 +53,7 @@ export const checkUserPasswordApi = (username: String, password: String) =>
     {
       url: Api.CHECKPASSWORD + '/' + username + '/check' + '/' + password,
     },
-    { errorMessageMode: 'none' }
+    { errorMessageMode: 'none' },
   );
 
 export const checkMinePasswordApi = (password: String) =>
@@ -61,7 +61,7 @@ export const checkMinePasswordApi = (password: String) =>
     {
       url: Api.CHECKMINEPASSWORD + '/' + password,
     },
-    { errorMessageMode: 'none' }
+    { errorMessageMode: 'none' },
   );
 
 export const userPasswordApi = (username: String, password: String) =>

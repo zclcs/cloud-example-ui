@@ -13,7 +13,7 @@ enum Api {
   Login = '/auth/oauth/token',
   Logout = '/auth/signout',
   GetUserInfo = '/auth/user',
-  GetPermCode = '/system/menu/permissions/',
+  GetPermCode = '/system/menu/permissions',
 }
 
 /**
@@ -47,8 +47,8 @@ export function getUserInfo() {
  * @param username 用户名
  * @returns 权限
  */
-export function getPermCode(username: string) {
-  return defHttpWithTransform.get<string[]>({ url: Api.GetPermCode + username });
+export function getPermCode() {
+  return defHttpWithTransform.get<string[]>({ url: Api.GetPermCode });
 }
 
 export function refreshTokenApi(params: RefreshTokenParams) {

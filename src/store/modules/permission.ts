@@ -92,8 +92,8 @@ export const usePermissionStore = defineStore({
       this.backMenuList = [];
       this.lastBuildMenuTime = 0;
     },
-    async changePermissionCode(username: string) {
-      const codeList = await getPermCode(username);
+    async changePermissionCode() {
+      const codeList = await getPermCode();
       this.setPermCodeList(codeList);
     },
     async buildRoutesAction(): Promise<AppRouteRecordRaw[]> {
@@ -184,10 +184,8 @@ export const usePermissionStore = defineStore({
           // this function may only need to be executed once, and the actual project can be put at the right time by itself
           let routeList: AppRouteRecordRaw[] = [];
           try {
-            this.changePermissionCode(userStore.getUserInfo.principal.username);
-            routeList = (await getMenuList(
-              userStore.getUserInfo.principal.username
-            )) as AppRouteRecordRaw[];
+            this.changePermissionCode();
+            routeList = (await getMenuList()) as AppRouteRecordRaw[];
           } catch (error) {
             console.error(error);
           }

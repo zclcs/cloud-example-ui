@@ -2,13 +2,13 @@ import { defHttpWithTransform } from '/@/utils/http/axios';
 import { getMenuListResultModel } from './model/menuModel';
 
 enum Api {
-  GetMenuList = '/system/menu/',
+  getRouter = '/system/menu/routers',
 }
 
 /**
  * @description: Get user menu based on id
  */
 
-export const getMenuList = (username: string) => {
-  return defHttpWithTransform.get<getMenuListResultModel>({ url: Api.GetMenuList + username });
+export const getMenuList = () => {
+  return defHttpWithTransform.get<getMenuListResultModel>({ url: Api.getRouter });
 };

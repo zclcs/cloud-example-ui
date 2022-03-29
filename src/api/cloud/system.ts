@@ -55,11 +55,11 @@ export const setRoleStatus = (id: number, status: string) =>
 export const isUserExist = (userId: number, account: string) =>
   defHttpWithTransform.get(
     { url: Api.IsUserExist + userId + '/' + account },
-    { errorMessageMode: 'none' }
+    { errorMessageMode: 'none' },
   );
 
 export const isRoleExist = (roleId: number, roleName: string) =>
   defHttpWithTransform.get(
     { url: Api.IsRoleExist + roleId + '/' + roleName },
-    { errorMessageMode: 'none' }
+    { errorMessageMode: 'none' },
   );
