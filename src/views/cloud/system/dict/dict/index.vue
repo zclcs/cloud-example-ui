@@ -83,7 +83,7 @@
         if (isSelect) {
           openModal(true, {
             isUpdate: false,
-            dictNameId: searchInfo.dictNameId,
+            dictName: searchInfo.dictName,
           });
         }
       }
@@ -94,7 +94,7 @@
           openModal(true, {
             record,
             isUpdate: true,
-            dictNameId: searchInfo.dictNameId,
+            dictName: searchInfo.dictName,
           });
         }
       }
@@ -104,13 +104,13 @@
         reload();
       }
 
-      function handleSelect(dictNameId = '') {
-        searchInfo.dictNameId = dictNameId;
+      function handleSelect(dictName = '') {
+        searchInfo.dictName = dictName;
         reload();
       }
 
       function handleDataChange() {
-        if (searchInfo.dictNameId === '' || searchInfo.dictNameId === undefined) {
+        if (searchInfo.dictName === '' || searchInfo.dictName === undefined) {
           notification.success({
             message: '请在左侧选择字典表名后操作',
             duration: 3,

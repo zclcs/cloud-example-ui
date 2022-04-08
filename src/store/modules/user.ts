@@ -148,8 +148,8 @@ export const useUserStore = defineStore({
     },
     async getUserInfoAction(): Promise<UserInfo> {
       const userInfo = await getUserInfo();
-      const { roles } = userInfo.principal;
-      const roleList = roles.map((item) => item.roleName) as RoleEnum[];
+      const { roleNames } = userInfo.principal;
+      const roleList = roleNames.split(',') as RoleEnum[];
       this.setUserInfo(userInfo);
       this.setRoleList(roleList);
       return userInfo;

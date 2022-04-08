@@ -29,7 +29,7 @@
     setup(_, { emit }) {
       const isUpdate = ref(true);
       const rowId = ref('');
-      const dictNameId = ref('');
+      const dictName = ref('');
 
       const [registerForm, { resetFields, setFieldsValue, updateSchema, validate }] = useForm({
         labelWidth: 100,
@@ -42,16 +42,16 @@
         resetFields();
         setDrawerProps({ confirmLoading: false });
         isUpdate.value = !!data?.isUpdate;
-        dictNameId.value = data.dictNameId;
+        dictName.value = data.dictName;
 
-        setFieldsValue({ dictNameId: dictNameId.value });
+        setFieldsValue({ dictName: dictName.value });
         if (unref(isUpdate)) {
           rowId.value = data.record.id;
           setFieldsValue({
             ...data.record,
           });
         }
-        const treeData = await getTableLevelOption({ dictNameId: dictNameId.value });
+        const treeData = await getTableLevelOption({ dictName: dictName.value });
         updateSchema({
           field: 'parentId',
           componentProps: { treeData },
@@ -64,7 +64,7 @@
         try {
           const values = await validate();
           setDrawerProps({ confirmLoading: true });
-          values.dictNameId = dictNameId.value;
+          values.dictName = dictName.value;
           if (unref(isUpdate)) {
             values.id = rowId.value;
             await updateTableLevelApi(values);

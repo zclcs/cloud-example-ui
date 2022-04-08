@@ -17,7 +17,7 @@
     setup(_, { emit }) {
       const isUpdate = ref(true);
       const rowId = ref('');
-      const dictNameId = ref('');
+      const dictName = ref('');
 
       const [registerForm, { resetFields, setFieldsValue, validate }] = useForm({
         labelWidth: 100,
@@ -29,7 +29,7 @@
         resetFields();
         setModalProps({ confirmLoading: false });
         isUpdate.value = !!data?.isUpdate;
-        dictNameId.value = data.dictNameId;
+        dictName.value = data.dictName;
 
         if (unref(isUpdate)) {
           rowId.value = data.record.id;
@@ -45,7 +45,7 @@
         try {
           const values = await validate();
           setModalProps({ confirmLoading: true });
-          values.dictNameId = dictNameId.value;
+          values.dictName = dictName.value;
           if (unref(isUpdate)) {
             values.id = rowId.value;
             await updateTableApi(values);
