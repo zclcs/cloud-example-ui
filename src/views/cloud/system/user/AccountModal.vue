@@ -17,7 +17,7 @@
     emits: ['success', 'register'],
     setup(_, { emit }) {
       const isUpdate = ref(true);
-      const rowId = ref('');
+      const userId = ref('');
 
       const [registerForm, { setFieldsValue, updateSchema, resetFields, validate, clearValidate }] =
         useForm({
@@ -35,7 +35,7 @@
         isUpdate.value = !!data?.isUpdate;
 
         if (unref(isUpdate)) {
-          rowId.value = data.record.userId;
+          userId.value = data.record.userId;
           setFieldsValue({
             ...data.record,
           });
@@ -62,7 +62,7 @@
           const values = await validate();
           setModalProps({ confirmLoading: true });
           if (unref(isUpdate)) {
-            values.userId = rowId.value;
+            values.userId = userId.value;
             await updateUserApi(values);
           } else {
             await createUserApi(values);

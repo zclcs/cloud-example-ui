@@ -2,7 +2,6 @@ import type { UserInfo } from '/#/store';
 import type { ErrorMessageMode } from '/#/axios';
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
-import { RoleEnum } from '/@/enums/roleEnum';
 import { PageEnum } from '/@/enums/pageEnum';
 import {
   ROLES_KEY,
@@ -25,7 +24,7 @@ interface UserState {
   userInfo: Nullable<UserInfo>;
   token?: string;
   refreshToken?: string;
-  roleList: RoleEnum[];
+  roleList: string;
   sessionTimeout?: boolean;
   lastUpdateTime: number;
   expireTime: number;
@@ -42,7 +41,7 @@ export const useUserStore = defineStore({
     // token
     refreshToken: undefined,
     // roleList
-    roleList: [],
+    roleList: '',
     // Whether the login expired
     sessionTimeout: false,
     // Last fetch time
@@ -62,8 +61,8 @@ export const useUserStore = defineStore({
     getReFreshToken(): string {
       return this.refreshToken || getAuthCache<string>(REFRESH_TOKEN_KEY);
     },
-    getRoleList(): RoleEnum[] {
-      return this.roleList.length > 0 ? this.roleList : getAuthCache<RoleEnum[]>(ROLES_KEY);
+    getRoleList(): string {
+      return this.roleList !== '' ? this.roleList : getAuthCache<string>(ROLES_KEY);
     },
     getSessionTimeout(): boolean {
       return !!this.sessionTimeout;
@@ -88,7 +87,7 @@ export const useUserStore = defineStore({
       setAuthCache(REFRESH_TOKEN_KEY, refreshToken);
       setAuthCache(EXPIRE_TMIE_KEY, expireTimeSe);
     },
-    setRoleList(roleList: RoleEnum[]) {
+    setRoleList(roleList: string) {
       this.roleList = roleList;
       setAuthCache(ROLES_KEY, roleList);
     },
@@ -108,7 +107,7 @@ export const useUserStore = defineStore({
       this.token = '';
       this.refreshToken = '';
       this.expireTime = 0;
-      this.roleList = [];
+      this.roleList = '';
       this.sessionTimeout = false;
     },
     /**
@@ -120,38 +119,42 @@ export const useUserStore = defineStore({
         mode?: ErrorMessageMode;
       },
     ): Promise<GetUserInfoModel | null> {
-      const { goHome = true, mode, ...loginParams } = params;
-      const data = await loginApi(loginParams, mode);
-      const { access_token, expires_in, refresh_token } = data;
+      try {
+        const { goHome = true, mode, ...loginParams } = params;
+        const data = await loginApi(loginParams, mode);
+        const { access_token, expires_in, refresh_token } = data;
 
-      // save token
-      this.setToken(access_token, refresh_token, expires_in);
-      // get user info
-      const userInfo = await this.getUserInfoAction();
+        // save token
+        this.setToken(access_token, refresh_token, expires_in);
+        // get user info
+        const userInfo = await this.getUserInfoAction();
 
-      const sessionTimeout = this.sessionTimeout;
-      if (sessionTimeout) {
-        this.setSessionTimeout(false);
-      } else if (goHome) {
-        const permissionStore = usePermissionStore();
-        if (!permissionStore.isDynamicAddedRoute) {
-          const routes = await permissionStore.buildRoutesAction();
-          routes.forEach((route) => {
-            router.addRoute(route as unknown as RouteRecordRaw);
-          });
-          router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
-          permissionStore.setDynamicAddedRoute(true);
+        const sessionTimeout = this.sessionTimeout;
+        if (sessionTimeout) {
+          this.setSessionTimeout(false);
+        } else if (goHome) {
+          const permissionStore = usePermissionStore();
+          if (!permissionStore.isDynamicAddedRoute) {
+            const routes = await permissionStore.buildRoutesAction();
+            routes.forEach((route) => {
+              router.addRoute(route as unknown as RouteRecordRaw);
+            });
+            router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
+            permissionStore.setDynamicAddedRoute(true);
+          }
+          await router.replace(userInfo.principal.homePath || PageEnum.BASE_HOME);
         }
-        await router.replace(userInfo.principal.homePath || PageEnum.BASE_HOME);
+        return userInfo;
+      } catch (error) {
+        console.log(error);
+        return this.userInfo;
       }
-      return userInfo;
     },
     async getUserInfoAction(): Promise<UserInfo> {
       const userInfo = await getUserInfo();
       const { roleNames } = userInfo.principal;
-      const roleList = roleNames.split(',') as RoleEnum[];
       this.setUserInfo(userInfo);
-      this.setRoleList(roleList);
+      this.setRoleList(roleNames);
       return userInfo;
     },
     /**
