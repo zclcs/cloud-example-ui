@@ -109,7 +109,7 @@ export const usePermissionStore = defineStore({
         const { meta } = route;
         const { roles } = meta || {};
         if (!roles) return true;
-        return roleList.some((role) => roles.includes(role));
+        return roles.includes(roleList);
       };
 
       const routeRemoveIgnoreFilter = (route: AppRouteRecordRaw) => {
@@ -123,7 +123,7 @@ export const usePermissionStore = defineStore({
        * */
       const patchHomeAffix = (routes: AppRouteRecordRaw[]) => {
         if (!routes || routes.length === 0) return;
-        let homePath: string = userStore.getUserInfo.principal.homePath || PageEnum.BASE_HOME;
+        let homePath: string = userStore.getUserInfo.homePath || PageEnum.BASE_HOME;
         function patcher(routes: AppRouteRecordRaw[], parentPath = '') {
           if (parentPath) parentPath = parentPath + '/';
           routes.forEach((route: AppRouteRecordRaw) => {

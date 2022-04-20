@@ -29,7 +29,7 @@ export interface ErrorLogInfo {
   time?: string;
 }
 
-export interface Principal {
+export interface UserInfo {
   // 用户角色id
   roleIds: string;
   // 用户角色名称
@@ -39,10 +39,6 @@ export interface Principal {
   // 用户名
   username: string;
   homePath?: string;
-}
-
-export interface UserInfo {
-  principal: Principal;
 }
 
 export interface BeforeMiniState {

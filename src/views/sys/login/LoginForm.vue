@@ -219,12 +219,13 @@
       if (userInfo) {
         notification.success({
           message: t('sys.login.loginSuccessTitle'),
-          description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.principal.username}`,
+          description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.username}`,
           duration: 3,
         });
       }
     } catch (error) {
-      if (error.status == 10001) {
+      console.log(error);
+      if (error.data.msg === '验证码已过期') {
         formData.code = '';
         handleChangeCode();
       }

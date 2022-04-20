@@ -119,40 +119,35 @@ export const useUserStore = defineStore({
         mode?: ErrorMessageMode;
       },
     ): Promise<GetUserInfoModel | null> {
-      try {
-        const { goHome = true, mode, ...loginParams } = params;
-        const data = await loginApi(loginParams, mode);
-        const { access_token, expires_in, refresh_token } = data;
+      const { goHome = true, mode, ...loginParams } = params;
+      const data = await loginApi(loginParams, mode);
+      const { access_token, expires_in, refresh_token } = data;
 
-        // save token
-        this.setToken(access_token, refresh_token, expires_in);
-        // get user info
-        const userInfo = await this.getUserInfoAction();
+      // save token
+      this.setToken(access_token, refresh_token, expires_in);
+      // get user info
+      const userInfo = await this.getUserInfoAction();
 
-        const sessionTimeout = this.sessionTimeout;
-        if (sessionTimeout) {
-          this.setSessionTimeout(false);
-        } else if (goHome) {
-          const permissionStore = usePermissionStore();
-          if (!permissionStore.isDynamicAddedRoute) {
-            const routes = await permissionStore.buildRoutesAction();
-            routes.forEach((route) => {
-              router.addRoute(route as unknown as RouteRecordRaw);
-            });
-            router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
-            permissionStore.setDynamicAddedRoute(true);
-          }
-          await router.replace(userInfo.principal.homePath || PageEnum.BASE_HOME);
+      const sessionTimeout = this.sessionTimeout;
+      if (sessionTimeout) {
+        this.setSessionTimeout(false);
+      } else if (goHome) {
+        const permissionStore = usePermissionStore();
+        if (!permissionStore.isDynamicAddedRoute) {
+          const routes = await permissionStore.buildRoutesAction();
+          routes.forEach((route) => {
+            router.addRoute(route as unknown as RouteRecordRaw);
+          });
+          router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
+          permissionStore.setDynamicAddedRoute(true);
         }
-        return userInfo;
-      } catch (error) {
-        console.log(error);
-        return this.userInfo;
+        await router.replace(userInfo.homePath || PageEnum.BASE_HOME);
       }
+      return userInfo;
     },
     async getUserInfoAction(): Promise<UserInfo> {
       const userInfo = await getUserInfo();
-      const { roleNames } = userInfo.principal;
+      const { roleNames } = userInfo;
       this.setUserInfo(userInfo);
       this.setRoleList(roleNames);
       return userInfo;

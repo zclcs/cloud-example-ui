@@ -14,23 +14,6 @@ export interface RefreshTokenParams {
   refresh_token: string | undefined;
 }
 
-export interface Principal {
-  // 用户角色id
-  roleIds: string;
-  // 用户角色名称
-  roleNames: string;
-  // 用户id
-  userId: number;
-  // 用户名
-  username: string;
-  homePath?: string;
-}
-
-export interface role {
-  roleId: number;
-  roleName: string;
-}
-
 /**
  * @description: Login interface return value
  */
@@ -46,5 +29,13 @@ export interface LoginResultModel {
  * @description: Get user information return value
  */
 export interface GetUserInfoModel {
-  principal: Principal;
+  // 用户角色id
+  roleIds: string;
+  // 用户角色名称
+  roleNames: string;
+  // 用户id
+  userId: number;
+  // 用户名
+  username: string;
+  homePath?: string;
 }
