@@ -160,7 +160,7 @@ export const formSchema: FormSchema[] = [
     field: 'perms',
     label: '权限标识',
     component: 'Input',
-    required: true,
+    required: ({ values }) => isButton(values.type),
     ifShow: ({ values }) => !isDir(values.type),
   },
   // {
