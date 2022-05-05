@@ -100,5 +100,13 @@ export const formSchema: FormSchema[] = [
     field: 'trimValue',
     label: '前缀内容',
     component: 'Input',
+    ifShow: ({ values }) => values.isTrim === '1',
+  },
+  {
+    field: 'excludeColumns',
+    label: '需要排除的字段',
+    helpMessage: ['多个逗号分隔'],
+    component: 'Input',
+    required: true,
   },
 ];
