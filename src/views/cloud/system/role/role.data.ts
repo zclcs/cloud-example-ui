@@ -41,11 +41,6 @@ export const columns: BasicColumn[] = [
   //   },
   // },
   {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    width: 180,
-  },
-  {
     title: '备注',
     dataIndex: 'remark',
   },

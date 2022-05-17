@@ -12,7 +12,7 @@ export const columns: BasicColumn[] = [
   },
   {
     title: '角色',
-    dataIndex: 'roleNames',
+    dataIndex: 'roleNameString',
     width: 200,
   },
   {

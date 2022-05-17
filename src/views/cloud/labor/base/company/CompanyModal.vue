@@ -10,6 +10,7 @@
   import { formSchema } from './table.data';
 
   import { createCompanyApi, updateCompanyApi } from '/@/api/cloud/company';
+  import moment from 'moment';
   export default defineComponent({
     name: 'CompanyModal',
     components: { BasicModal, BasicForm },
@@ -66,6 +67,10 @@
           const values = await validate();
           setModalProps({ confirmLoading: true });
           values.areaCode = values.areaCode.join();
+          values.registerDate = moment(values.registerDate).format('YYYY-MM-DD');
+          if (values.establishDate !== undefined) {
+            values.establishDate = moment(values.establishDate).format('YYYY-MM-DD');
+          }
           if (unref(isUpdate)) {
             values.companyId = rowId.value;
             await updateCompanyApi(values);

@@ -34,7 +34,7 @@ export const columns: BasicColumn[] = [
   },
   {
     title: '请求时间',
-    dataIndex: 'createTime',
+    dataIndex: 'createAt',
     width: 60,
     align: 'left',
   },
