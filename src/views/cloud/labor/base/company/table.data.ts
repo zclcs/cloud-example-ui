@@ -205,7 +205,10 @@ export const formSchema: FormSchema[] = [
     field: 'registerDate',
     label: '注册日期',
     component: 'DatePicker',
-    componentProps: { style: { width: '100%' } },
+    componentProps: {
+      style: { width: '100%' },
+      valueFormat: 'YYYY-MM-DD',
+    },
     colProps: {
       span: 8,
     },
@@ -231,7 +234,10 @@ export const formSchema: FormSchema[] = [
     field: 'establishDate',
     label: '成立日期',
     component: 'DatePicker',
-    componentProps: { style: { width: '100%' } },
+    componentProps: {
+      style: { width: '100%' },
+      valueFormat: 'YYYY-MM-DD',
+    },
     colProps: {
       span: 8,
     },
