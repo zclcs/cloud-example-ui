@@ -224,7 +224,6 @@
         });
       }
     } catch (error) {
-      console.log(error);
       if (error.data.msg === '验证码已过期') {
         formData.code = '';
         handleChangeCode();
